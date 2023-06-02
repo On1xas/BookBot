@@ -2,18 +2,23 @@ from dataclasses import dataclass
 
 from environs import Env
 
+
 @dataclass
 class TgBot:
-    token: str
-    admin_list: list
-
+    token: str            # Токен для доступа к телеграм-боту
+    admin_ids: list[int]  # Список id администраторов бота
 
 
 @dataclass
 class Config:
-    tgbot: TgBot
+    tg_bot: TgBot
 
-def get_config(path_to_env):
-    env=Env()
-    env.read_env(path_to_env)
-    return Config(tgbot=TgBot(token=env("BOT_TOKEN"), admin_list=list(map(int, env.list('ADMIN_IDS')))))
+
+# Создаем функцию, которая будет читать файл .env и возвращать
+# экземпляр класса Config с заполненными полями token и admin_ids
+def load_config(path: str | None = None) -> Config:
+    env = Env()
+    env.read_env(path)
+    return Config(tg_bot=TgBot(
+                    token=env('BOT_TOKEN'),
+                    admin_ids=list(map(int, env.list('ADMIN_IDS')))))
